@@ -1,0 +1,423 @@
+<!DOCTYPE HTML>
+<!--
+	Projection by TEMPLATED
+	templated.co @templatedco
+	Released for free under the Creative Commons Attribution 3.0 license (templated.co/license)
+-->
+<html>
+	<head>
+		<title>Jewelry Resume System</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<script src="./node_modules/web3/dist/web3.min.js"></script>
+	</head>
+	<body>
+
+		<!-- Header -->
+			<header id="header">
+				<div class="inner">
+					<a href="index.html" class="logo"><strong>Jewelry Resume System</strong> </a>
+					<nav id="nav">
+						
+					</nav>
+					<a href="#navPanel" class="navPanelToggle"><span class="fa fa-bars"></span></a>
+				</div>
+			</header>
+
+		<!-- Banner -->
+			<section id="banner">
+				<div class="inner">
+					<header>
+						<h1>Welcome to Jewelry Resume System</h1>
+					</header>
+				</div>
+			</section>
+
+
+		<!-- Three -->
+
+			<section id="three" class="wrapper align-center">
+				<div class="inner">
+					<div >
+						<article>
+							
+							<header>
+								<h3>Account</h3>
+							
+							<select id="account" onChange="enable()"></select>
+							<button id="deploy_btn">Deploy</button>
+							<p id="initiator"></p>
+							<p id="youraccount"></p>
+						</article>
+
+
+					</div>
+				</div>
+
+
+			</section>
+			<section id="four" class="wrapper align-center">
+				<div class="inner">
+					<div class="flex flex-2">
+						<article>
+								<h3>New Record</h3>
+								<form>
+								Jewelry ID : <input id="jId" type="text"><br>
+								Name : <input id="jName" type="text"><br>
+								Type : <input id="jType" type="text"><br>
+								Certificate : <input id="jCertificate" type="text"><br>
+								Seller : <input id="jSeller" type="text"><br>
+								Buyer : <input id="jBuyer" type="text"><br>
+								Price : <input id="jPrice" type="text"><br>
+								Date of transaction : <input id="jDOT" type="text"><br>
+								<button id="add_btn">Add new record</button><br>
+								<image id='loader' src="https://loading.io/mod/spinner/double-ring/sample.gif" style="position: relative; left: 10.5%; transform: translate(-50%);" hidden>
+								<p id="newrecord"></p>
+								</form>
+						</article>
+
+
+
+						
+						<article>
+								<h3>Retrieve Jewelry History</h3>
+								<form>
+								Jewelry ID : <input id="retrieve_jId" type="text"><br>
+								<button id="retrieve_btn">Retrieve</button>
+								<table id='retrieveresult' style="width:100%; table-layout:fixed"></table>
+								</form>
+						</article>
+					</div>
+				</div>
+			</section>
+
+
+		
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/skel.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+			<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+
+<script>
+	if (typeof web3 !== 'undefined') {
+		web3 = new Web3(web3.currentProvider);
+	} else {
+		// set the provider you want from Web3.providers
+		web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+	}
+	
+	// Get account list (from Ganache-cli) and display on select box.
+	function accountSelect(target, accArray){
+		select = document.getElementById(target);
+		for (var i = 0; i < accArray.length; i++){
+            var opt = document.createElement('option');
+            opt.value = i;
+            opt.innerHTML = accArray[i];
+            select.appendChild(opt);
+        }
+	}
+	accountSelect("account", web3.eth.accounts);
+	web3.eth.defaultAccount =  web3.eth.accounts[0];
+	
+	// Get current account user used.
+	var sel = document.getElementById('account');
+	function enable() {
+		web3.eth.defaultAccount = sel.options[sel.selectedIndex].text;
+		$("#youraccount").html('Your Account : ' + web3.eth.defaultAccount);
+	}
+	
+	// ABI
+	var JewelryContract = web3.eth.contract([
+		{
+			"constant": false,
+			"inputs": [
+				{
+					"name": "_jewelryId",
+					"type": "uint256"
+				},
+				{
+					"name": "_jname",
+					"type": "bytes32"
+				},
+				{
+					"name": "_jtype",
+					"type": "bytes32"
+				},
+				{
+					"name": "_jcertificate",
+					"type": "bytes32"
+				},
+				{
+					"name": "_jseller",
+					"type": "bytes32"
+				},
+				{
+					"name": "_jowner",
+					"type": "bytes32"
+				},
+				{
+					"name": "_jprice",
+					"type": "uint256"
+				},
+				{
+					"name": "_jDOT",
+					"type": "bytes32"
+				}
+			],
+			"name": "addNewOwner",
+			"outputs": [],
+			"payable": false,
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"constant": true,
+			"inputs": [
+				{
+					"name": "",
+					"type": "uint256"
+				},
+				{
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"name": "history",
+			"outputs": [
+				{
+					"name": "jname",
+					"type": "bytes32"
+				},
+				{
+					"name": "jtype",
+					"type": "bytes32"
+				},
+				{
+					"name": "jcertificate",
+					"type": "bytes32"
+				},
+				{
+					"name": "jseller",
+					"type": "bytes32"
+				},
+				{
+					"name": "jowner",
+					"type": "bytes32"
+				},
+				{
+					"name": "jprice",
+					"type": "uint256"
+				},
+				{
+					"name": "jDOT",
+					"type": "bytes32"
+				}
+			],
+			"payable": false,
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"constant": true,
+			"inputs": [
+				{
+					"name": "_jewelryId",
+					"type": "uint256"
+				}
+			],
+			"name": "getHistoryCount",
+			"outputs": [
+				{
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"payable": false,
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"constant": true,
+			"inputs": [
+				{
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"name": "allJewelry",
+			"outputs": [
+				{
+					"name": "",
+					"type": "bool"
+				}
+			],
+			"payable": false,
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"constant": true,
+			"inputs": [
+				{
+					"name": "_jewelryId",
+					"type": "uint256"
+				},
+				{
+					"name": "index",
+					"type": "uint256"
+				}
+			],
+			"name": "retrieveJewelryHistory",
+			"outputs": [
+				{
+					"name": "",
+					"type": "bytes32"
+				},
+				{
+					"name": "",
+					"type": "bytes32"
+				},
+				{
+					"name": "",
+					"type": "bytes32"
+				},
+				{
+					"name": "",
+					"type": "uint256"
+				},
+				{
+					"name": "",
+					"type": "bytes32"
+				}
+			],
+			"payable": false,
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [],
+			"payable": false,
+			"stateMutability": "nonpayable",
+			"type": "constructor"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": false,
+					"name": "jewelryId",
+					"type": "uint256"
+				},
+				{
+					"indexed": false,
+					"name": "owner",
+					"type": "string"
+				},
+				{
+					"indexed": false,
+					"name": "flag",
+					"type": "bool"
+				},
+				{
+					"indexed": false,
+					"name": "message",
+					"type": "string"
+				}
+			],
+			"name": "JewelrySold",
+			"type": "event"
+		}
+	]);
+	
+	// ByteCode
+	const bytecode = "608060405234801561001057600080fd5b5033600160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550610d92806100616000396000f30060806040526004361061006d576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff16806332d6434a1461007257806371d9e19e146100fd578063afa8880e146101a2578063d504311f146101e3578063f57c6faf14610228575b600080fd5b34801561007e57600080fd5b506100fb60048036038101908080359060200190929190803560001916906020019092919080356000191690602001909291908035600019169060200190929190803560001916906020019092919080356000191690602001909291908035906020019092919080356000191690602001909291905050506102af565b005b34801561010957600080fd5b5061013260048036038101908080359060200190929190803590602001909291905050506108dd565b6040518088600019166000191681526020018760001916600019168152602001866000191660001916815260200185600019166000191681526020018460001916600019168152602001838152602001826000191660001916815260200197505050505050505060405180910390f35b3480156101ae57600080fd5b506101cd6004803603810190808035906020019092919050505061093b565b6040518082815260200191505060405180910390f35b3480156101ef57600080fd5b5061020e600480360381019080803590602001909291905050506109f7565b604051808215151515815260200191505060405180910390f35b34801561023457600080fd5b5061025d6004803603810190808035906020019092919080359060200190929190505050610a17565b6040518086600019166000191681526020018560001916600019168152602001846000191660001916815260200183815260200182600019166000191681526020019550505050505060405180910390f35b6102b7610d16565b60e060405190810160405280896000191681526020018860001916815260200187600019168152602001866000191681526020018560001916815260200184815260200183600019168152509050600260008a815260200190815260200160002060009054906101000a900460ff16156107075784600019168460001916141515156103ab576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260178152602001807f42757965722063616e27742062652073656c6c6572202e00000000000000000081525060200191505060405180910390fd5b8360001916600360008b81526020019081526020016000206001600360008d815260200190815260200160002080549050038154811015156103e957fe5b9060005260206000209060070201600401546000191614151515610475576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260148152602001807f427579657220697320746865206f776e6572202e00000000000000000000000081525060200191505060405180910390fd5b8460001916600360008b81526020019081526020016000206001600360008d815260200190815260200160002080549050038154811015156104b357fe5b9060005260206000209060070201600401546000191614151561053e576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260208152602001807f53656c6c657220646f65736e2774206f776e20746865206a6577656c7279202e81525060200191505060405180910390fd5b600360008a81526020019081526020016000208190806001815401808255809150509060018203906000526020600020906007020160009091929091909150600082015181600001906000191690556020820151816001019060001916905560408201518160020190600019169055606082015181600301906000191690556080820151816004019060001916905560a0820151816005015560c082015181600601906000191690555050507fdce692f7366e8aa5f41d41be3f92d2848524d754eef4323bb97ec909386de84d8961061586610b1a565b600160405180848152602001806020018315151515815260200180602001838103835285818151815260200191508051906020019080838360005b8381101561066b578082015181840152602081019050610650565b50505050905090810190601f1680156106985780820380516001836020036101000a031916815260200191505b50838103825260278152602001807f4e6577206f776e65727368697020616464656420746f206578697374696e672081526020017f6a6577656c7279000000000000000000000000000000000000000000000000008152506040019550505050505060405180910390a16108d2565b6001600260008b815260200190815260200160002060006101000a81548160ff021916908315150217905550600360008a81526020019081526020016000208190806001815401808255809150509060018203906000526020600020906007020160009091929091909150600082015181600001906000191690556020820151816001019060001916905560408201518160020190600019169055606082015181600301906000191690556080820151816004019060001916905560a0820151816005015560c082015181600601906000191690555050507fdce692f7366e8aa5f41d41be3f92d2848524d754eef4323bb97ec909386de84d8961080a86610b1a565b600160405180848152602001806020018315151515815260200180602001838103835285818151815260200191508051906020019080838360005b83811015610860578082015181840152602081019050610845565b50505050905090810190601f16801561088d5780820380516001836020036101000a031916815260200191505b50838103825260118152602001807f4e6577204a6577656c72792061646465640000000000000000000000000000008152506020019550505050505060405180910390a15b505050505050505050565b6003602052816000526040600020818154811015156108f857fe5b9060005260206000209060070201600091509150508060000154908060010154908060020154908060030154908060040154908060050154908060060154905087565b6000600115156002600084815260200190815260200160002060009054906101000a900460ff1615151415156109d9576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040180806020018281038252601a8152602001807f4a6577656c7279206973206e6f7420726567697374657265642100000000000081525060200191505060405180910390fd5b60036000838152602001908152602001600020805490509050919050565b60026020528060005260406000206000915054906101000a900460ff1681565b60008060008060008060011515600260008a815260200190815260200160002060009054906101000a900460ff161515141515610abc576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040180806020018281038252601a8152602001807f4a6577656c7279206973206e6f7420726567697374657265642100000000000081525060200191505060405180910390fd5b6003600089815260200190815260200160002087815481101515610adc57fe5b906000526020600020906007020190508060020154816003015482600401548360050154846006015495509550955095509550509295509295909350565b6060806000806000606060206040519080825280601f01601f191660200182016040528015610b585781602001602082028038833980820191505090505b50945060009350600092505b6020831015610c22578260080260020a876001900402600102915060007f010000000000000000000000000000000000000000000000000000000000000002827effffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff1916141515610c1557818585815181101515610bdc57fe5b9060200101907effffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff1916908160001a90535083806001019450505b8280600101935050610b64565b836040519080825280601f01601f191660200182016040528015610c555781602001602082028038833980820191505090505b509050600092505b83831015610d09578483815181101515610c7357fe5b9060200101517f010000000000000000000000000000000000000000000000000000000000000090047f0100000000000000000000000000000000000000000000000000000000000000028184815181101515610ccc57fe5b9060200101907effffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff1916908160001a9053508280600101935050610c5d565b8095505050505050919050565b60e0604051908101604052806000801916815260200160008019168152602001600080191681526020016000801916815260200160008019168152602001600081526020016000801916815250905600a165627a7a7230582012d6c51ad67be22ad8587ed9307d35d978c2269ff1a7e98f76fd02a1959878da0029";
+	const gasEstimate = web3.eth.estimateGas({ data: '0x' + bytecode });
+	var contractAddress;
+	var Jewelry;
+	
+	// Deploy the contract.
+	$("#deploy_btn").click(function() {
+	
+		document.getElementById("deploy_btn").disabled = true;
+		$("#initiator").html('Contact initiator : ' + sel.options[sel.selectedIndex].text);
+		// Deploy
+		JewelryContract.new({ data: '0x' + bytecode, from: sel.options[sel.selectedIndex].text, gas: gasEstimate }, (err, res) => {
+			if (err) {
+				console.log(err);
+				return;
+			} else {
+				if (res.address) {
+					contractAddress = res.address;
+					// Contract address.
+					Jewelry = JewelryContract.at(contractAddress);
+					console.log('Deployed contract address: ' + res.address);
+				}
+			}
+		});
+	});
+	
+	// Contract address.
+	Jewelry = JewelryContract.at(contractAddress);
+	console.log(Jewelry);
+	
+	// Add new record.
+	$("#add_btn").click(function(error) {
+	
+		Jewelry.addNewOwner($("#jId").val(), web3.fromAscii($("#jName").val()), web3.fromAscii($("#jType").val()), web3.fromAscii($("#jCertificate").val()), web3.fromAscii($("#jSeller").val()), web3.fromAscii($("#jBuyer").val()), $("#jPrice").val(), web3.fromAscii($("#jDOT").val()), {from: web3.eth.defaultAccount, gas:300000});
+		$("#loader").show();
+		
+		$("#jId").val("");
+		$("#jName").val("");
+		$("#jType").val("");
+		$("#jCertificate").val("");
+		$("#jSeller").val("");
+		$("#jBuyer").val("");
+		$("#jPrice").val("");
+		$("#jDOT").val("");
+		return false;
+	
+	});
+	
+	// Listen event.
+	var JewelrySoldEvent = Jewelry.JewelrySold();
+	JewelrySoldEvent.watch(function(error, result){
+		if(!error)
+		{
+			$("#loader").hide();
+			$("#newrecord").html('New record : (id) ' + result.args.jewelryId + ', (owner) ' + result.args.owner + "<br>" + result.args.message);
+			console.log(result);
+		}
+		else
+		{
+			$("#loader").hide();
+			console.error(error);
+		}
+	});
+	
+	// Retrieve history record.
+	$("#retrieve_btn").click(function() {
+		
+		$("#retrieveresult").show();
+		var historylen  = Jewelry.getHistoryCount($("#retrieve_jId").val());
+		var resultheader = "<p>Jewelry Id : " + $("#retrieve_jId").val() + "</p><br><tr><th>Data of Transaction</th><th>Certificate</th><th>Seller( ͡• ͜ʖ ͡• )</th><th>Buyer(͡• ͜໒ ͡• )</th><th>Price</th></tr>";
+		
+		for (var i = 0; i < historylen; i++) {
+			var rs = Jewelry.retrieveJewelryHistory($("#retrieve_jId").val(), i);
+			resultheader = resultheader + "<tr><td>" + web3.toAscii(rs[4]) + "</td><td>" + web3.toAscii(rs[0]) + "</td><td>" + web3.toAscii(rs[1]) + "</td><td>" + web3.toAscii(rs[2]) + "</td><td>" + rs[3] + "</td></tr>";
+		}
+		<!-- alert(resultheader); -->
+		$("#retrieveresult").html(resultheader);
+		$("#retrieve_jId").val("");
+		return false;
+		
+	});
+	
+		</script>
+
+
+	</body>
+</html>
